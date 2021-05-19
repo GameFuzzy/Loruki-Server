@@ -20,7 +20,6 @@ const startServer = async () => {
   const PORT = process.env.PORT || 4000
   const app = express()
   app.use(compression())
-  app.use(cookieParser())
   app.use(
     cors({
       origin: 'http://localhost:3000',
@@ -33,6 +32,8 @@ const startServer = async () => {
         process.env.NODE_ENV === 'production' ? undefined : false
     })
   )
+
+  app.use('/refresh_token', cookieParser())
 
   app.post('/refresh_token', async (req, res) => {
     const token = req.cookies.jid

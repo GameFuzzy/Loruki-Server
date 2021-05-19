@@ -56,8 +56,8 @@ export class CustomUserResolver {
   }
 
   @Query(() => User, { nullable: true })
-  async me(@Ctx() context: Context): Promise<User | null> {
-    const authorization = context.req.headers['authorization']
+  async me(@Ctx() { prisma, req }: Context): Promise<User | null> {
+    const authorization = req.headers['authorization']
 
     if (!authorization) {
       return null
@@ -66,7 +66,7 @@ export class CustomUserResolver {
     try {
       const token = authorization.split(' ')[1]
       const payload: any = verify(token, process.env.JWT_SECRET!)
-      return await context.prisma.user.findUnique({
+      return await prisma.user.findUnique({
         where: { id: payload.userId }
       })
     } catch (e) {
@@ -135,6 +135,16 @@ export class CustomUserResolver {
     return {
       accessToken: createAccessToken(user),
       user
+    }
+  }
+
+  @Mutation(() => Boolean, { nullable: true })
+  async logoutUser(@Ctx() { res }: Context): Promise<boolean> {
+    try {
+      sendRefreshToken(res, '')
+      return true
+    } catch {
+      return false
     }
   }
 }

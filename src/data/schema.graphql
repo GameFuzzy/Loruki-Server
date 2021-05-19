@@ -184,6 +184,7 @@ type Mutation {
   revokeRefreshTokensForUser(userId: String!): User!
   registerUser(data: UserInput!): User!
   loginUser(data: UserInput!): LoginResponse!
+  logoutUser: Boolean
 }
 
 input UsageStatsCreateInput {
