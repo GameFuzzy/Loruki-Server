@@ -4,7 +4,6 @@ import {
   Ctx,
   Field,
   InputType,
-  Int,
   Mutation,
   ObjectType,
   Query,
@@ -90,11 +89,16 @@ export class CustomUserResolver {
     })
   }
 
-  @Mutation(() => User)
+  @Mutation(() => LoginResponse)
   async registerUser(
     @Ctx() { prisma }: Context,
     @Arg('data') data: UserInput
-  ): Promise<User> {
+  ): Promise<LoginResponse> {
+    // Password validation
+    if (data.password.length < 5) {
+      throw new Error('Password is too short')
+    }
+
     let user: User
     try {
       user = await prisma.user.create({
@@ -104,9 +108,16 @@ export class CustomUserResolver {
         }
       })
     } catch (e) {
-      throw new Error('Could not register user: ' + e.message)
+      if (e.code == 'P2002') {
+        throw new Error('User already exists')
+      } else {
+        throw new Error('Could not register user: ' + e.code)
+      }
     }
-    return user
+    return {
+      accessToken: createAccessToken(user),
+      user
+    }
   }
 
   @Mutation(() => LoginResponse)

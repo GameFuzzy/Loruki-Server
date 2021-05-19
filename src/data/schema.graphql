@@ -182,7 +182,7 @@ enum UserScalarFieldEnum {
 type Mutation {
   createUsageStats(data: UsageStatsCreateInput!): UsageStats!
   revokeRefreshTokensForUser(userId: String!): User!
-  registerUser(data: UserInput!): User!
+  registerUser(data: UserInput!): LoginResponse!
   loginUser(data: UserInput!): LoginResponse!
   logoutUser: Boolean
 }
@@ -195,12 +195,12 @@ input UsageStatsCreateInput {
   projects: Int!
 }
 
-input UserInput {
-  username: String!
-  password: String!
-}
-
 type LoginResponse {
   accessToken: String!
   user: User!
+}
+
+input UserInput {
+  username: String!
+  password: String!
 }
